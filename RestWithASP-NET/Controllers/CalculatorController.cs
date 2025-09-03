@@ -15,18 +15,17 @@ public class CalculatorController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("sum/{firstNumber}/{secondNumber}")]
-    public IActionResult Get(string firstNumber, string secondNumber)
+    [HttpGet("subtraction{firstNumber}/{secondNumber}")]
+    public IActionResult Subtracao(string primeiroNumero, string segundoNumero)
     {
-        if (IsNumeric(firstNumber) && IsNumeric(secondNumber))
+        if (IsNumeric(primeiroNumero) && IsNumeric(segundoNumero))
         {
-            var sum = ConvertToDecimal(firstNumber) + ConvertToDecimal(secondNumber);
-            return Ok(sum.ToString());
+            var sub = ConvertToDecimal(primeiroNumero) - ConvertToDecimal(segundoNumero);
+            return Ok(sub.ToString());
         }
-
         return BadRequest("Invalid input");
-    }
-
+    }    
+    
     private int ConvertToDecimal(string strNumber)
     {
         decimal decimalValue;
