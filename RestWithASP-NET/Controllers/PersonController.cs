@@ -1,46 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
+using RestWithASP_NET.Model;
+using RestWithASP_NET.Services.Implementations;
 
 namespace RestWithASP_NET.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CalculatorController : ControllerBase
+public class PersonController : ControllerBase
 {
 
+    private IPersonService _personService;
+    private readonly ILogger<PersonController> _logger;
 
-    private readonly ILogger<CalculatorController> _logger;
-
-    public CalculatorController(ILogger<CalculatorController> logger)
+    public PersonController(ILogger<PersonController> logger, IPersonService personService)
     {
         _logger = logger;
+        _personService = personService; 
     }
 
-    [HttpGet("subtraction{firstNumber}/{secondNumber}")]
-    public IActionResult Subtracao(string primeiroNumero, string segundoNumero)
+    [HttpGet]
+    public IActionResult Get()
     {
-        if (IsNumeric(primeiroNumero) && IsNumeric(segundoNumero))
-        {
-            var sub = ConvertToDecimal(primeiroNumero) - ConvertToDecimal(segundoNumero);
-            return Ok(sub.ToString());
-        }
-        return BadRequest("Invalid input");
-    }    
+        return Ok(_personService.FindAll);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult Get(long id)
+    {
+        var person = _personService.FindById(id);
+        if (person == null) return NotFound();
+        return Ok();
+
+    }
+
+    [HttpPost]
+    public IActionResult Post([FromBody] Person person)
+    {
+        if (person == null) return BadRequest();
+        return Ok(_personService.Create(person));
+    }
+
+    [HttpPut]
+    public IActionResult Put([FromBody] Person person)
+    {
+        if (person == null) return BadRequest();
+        return Ok(_personService.Update(person));
+    }
     
-    private int ConvertToDecimal(string strNumber)
+    [HttpDelete("{id}")]
+    public IActionResult Delete(long id)
     {
-        decimal decimalValue;
-        if (decimal.TryParse(strNumber, out decimalValue))
-        {
-            return (int)decimalValue;
-        }
+        _personService.FindById(id);
+        return NoContent();
 
-        return 0;
     }
 
-    private bool IsNumeric(string strNumber)
-    {
-        double number;
-        bool isNumber = double.TryParse(strNumber, System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out number);
-        return isNumber;
-    }
 }
