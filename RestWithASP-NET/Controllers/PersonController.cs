@@ -5,7 +5,7 @@ using RestWithASP_NET.Services.Implementations;
 namespace RestWithASP_NET.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PersonController : ControllerBase
 {
 
@@ -21,7 +21,7 @@ public class PersonController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_personService.FindAll);
+        return Ok(_personService.FindAll());
     }
 
     [HttpGet("{id}")]
@@ -29,7 +29,7 @@ public class PersonController : ControllerBase
     {
         var person = _personService.FindById(id);
         if (person == null) return NotFound();
-        return Ok();
+        return Ok(person);
 
     }
 
@@ -50,7 +50,7 @@ public class PersonController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
     {
-        _personService.FindById(id);
+        _personService.Delete(id);
         return NoContent();
 
     }

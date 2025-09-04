@@ -4,6 +4,8 @@ namespace RestWithASP_NET.Services.Implementations
 {
     public class PersonServiceImplementation : IPersonService
     {
+        private volatile int count;
+
         public Person Create(Person person)
         {
             return person;
@@ -15,14 +17,21 @@ namespace RestWithASP_NET.Services.Implementations
 
         public List<Person> FindAll()
         {
+            List<Person> persons = new List<Person>();
+            for (int i = 0; i < 8; i++)
+            {
+                Person person = MockPerson(i);
+                persons.Add(person);
+            }
             return persons;
         }
+        
 
         public Person FindById(long id)
         {
             return new Person
             {
-                Id = 1,
+                Id = IncrementAndGet(),
                 FirstName = "Leandro",
                 LastName = "Costa",
                 Address = "Uberlândia - Minas Gerais - Brasil",
@@ -32,7 +41,24 @@ namespace RestWithASP_NET.Services.Implementations
 
         public Person Update(Person person)
         {
-            throw new NotImplementedException();
+            return person;
+        }
+
+        private Person MockPerson(int i)
+        {
+            return new Person
+            {
+                Id = IncrementAndGet(),
+                FirstName = "Person Name"+ i,
+                LastName = "Person Last Name" + i,
+                Address = "Some Adress" + i,
+                Gender = "Male" + i
+            };
+        }
+
+        private long IncrementAndGet()
+        {
+            return Interlocked.Increment(ref count);
         }
     }
 }
